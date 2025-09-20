@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Tuna</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #4cafef;
+      text-shadow: 0 0 10px rgba(76, 175, 239, 0.5);
+    }
+
+    .subtitle {
+      color: #aaa;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-align: center;
+      flex: 1;
+    }
+
+    .tab.active {
+      background: #4cafef;
+      font-weight: bold;
+    }
+
+    .tuning-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .tuning-card {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .tuning-card:hover {
+      background: #333;
+      transform: translateY(-5px);
+    }
+
+    .tuning-card.selected {
+      border: 2px solid #4cafef;
+      box-shadow: 0 0 15px #4cafef;
+    }
+
+    .tuning-card span {
+      display: block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .custom-tuning {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      display: none;
+    }
+
+    .custom-tuning.active {
+      display: block;
+    }
+
+    .string-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .string-config {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .string-label {
+      font-weight: bold;
+      width: 30px;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: #fff;
+      flex: 1;
+    }
+
+    .custom-name {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: #fff;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .save-tuning {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .save-tuning:hover {
+      background: #3d8b40;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+
+    @media (min-width: 900px) {
+      .main-content {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .strings-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    @media (min-width: 600px) {
+      .strings-container {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    .string {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .string:hover {
+      background: #333;
+    }
+
+    .string.active {
+      background: #3a3a3a;
+      box-shadow: 0 0 15px #4cafef;
+    }
+
+    .string-name {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .string-freq {
+      font-size: 16px;
+      color: #4cafef;
+      margin-bottom: 10px;
+    }
+
+    .tuner-display {
+      background: #2a2a2a;
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .tuner-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #4cafef;
+    }
+
+    .needle-container {
+      position: relative;
+      height: 200px;
+      margin: 30px 0;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .needle-scale {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .scale-mark {
+      width: 2px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .scale-mark.middle {
+      background: #4cafef;
+      width: 3px;
+    }
+
+    .scale-mark::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .scale-mark.middle::after {
+      background: #4cafef;
+      width: 30px;
+    }
+
+    .needle {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(0deg);
+      width: 6px;
+      height: 180px;
+      background: #ff5252;
+      border-radius: 3px 3px 0 0;
+      transform-origin: bottom center;
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .needle::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: #ff5252;
+      border-radius: 50%;
+    }
+
+    .frequency-display {
+      margin-top: 20px;
+    }
+
+    .current-freq {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #4cafef;
+      margin-bottom: 10px;
+    }
+
+    .target-freq {
+      font-size: 1.5rem;
+      color: #aaa;
+      margin-bottom: 15px;
+    }
+
+    .difference {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    .status.perfect {
+      background: #4caf50;
+      color: white;
+    }
+
+    .status.too-low {
+      background: #ff9800;
+      color: white;
+    }
+
+    .status.too-high {
+      background: #f44336;
+      color: white;
+    }
+
+    .note-indicator {
+      margin-top: 20px;
+      padding: 15px;
+      background: #333;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .note-label {
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+
+    .note-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #4cafef;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .note-details {
+      font-size: 1rem;
+      color: #aaa;
+      margin-left: 10px;
+    }
+
+    .instructions {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .instructions h3 {
+      color: #4cafef;
+      margin-bottom: 15px;
+    }
+
+    .instructions p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .history-container {
+      margin-top: 20px;
+      height: 60px;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .history-graph {
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      padding: 0 5px;
+    }
+
+    .history-bar {
+      flex: 1;
+      background: #4cafef;
+      margin: 0 2px;
+      border-radius: 2px 2px 0 0;
+      transition: height 0.3s ease;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .permission-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: all 0.3s ease;
+    }
+
+    .permission-btn:hover {
+      background: #3d8b40;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Afinador mt bom Easy Tuna </h1>
+    <p class="subtitle">Só fiz isso porque não tenho dinheiro para comprar um afinador, é tenso...</p>
+  </header>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('preset')">Afinações Predefinidas</div>
+      <div class="tab" onclick="showTab('custom')">Afinações Personalizadas</div>
+    </div>
+
+    <div id="preset-tunings" class="tuning-selector">
+      <div class="tuning-card" onclick="selectTuning(this, 'standard')">
+        Standard (EADGBE)
+        <span>Afinação padrão</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'dropd')">
+        Drop D (DADGBE)
+        <span>Para músicas mais pesadas</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'eb')">
+        Eb Standard (EbAbDbGbBbEb)
+        <span>Meio tom abaixo</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'dstd')">
+        D Standard (DGCFAD)
+        <span>Um tom abaixo</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'openg')">
+        Open G (DGDGBD)
+        <span>Para blues e slide guitar</span>
+      </div>
+    </div>
+
+    <div id="custom-tuning" class="custom-tuning">
+      <h3>Criar Afinação Personalizada</h3>
+      <input type="text" class="custom-name" id="customTuningName" placeholder="Nome da afinação personalizada">
+      
+      <div class="string-selector">
+        <div class="string-config">
+          <span class="string-label">6ª</span>
+          <select id="string6">
+            <option value="E2">E2</option>
+            <option value="F2">F2</option>
+            <option value="F#2">F#2</option>
+            <option value="G2">G2</option>
+            <option value="G#2">G#2</option>
+            <option value="A2">A2</option>
+            <option value="A#2">A#2</option>
+            <option value="B2">B2</option>
+            <option value="C3">C3</option>
+            <option value="C#3">C#3</option>
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">5ª</span>
+          <select id="string5">
+            <option value="A2">A2</option>
+            <option value="A#2">A#2</option>
+            <option value="B2">B2</option>
+            <option value="C3">C3</option>
+            <option value="C#3">C#3</option>
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3" selected>A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">4ª</span>
+          <select id="string4">
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4" selected>D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">3ª</span>
+          <select id="string3">
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4" selected>G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4">B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">2ª</span>
+          <select id="string2">
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4" selected>B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+            <option value="D#5">D#5</option>
+            <option value="E5">E5</option>
+            <option value="F5">F5</option>
+            <option value="F#5">F#5</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">1ª</span>
+          <select id="string1">
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4">B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+            <option value="D#5">D#5</option>
+            <option value="E5" selected>E5</option>
+            <option value="F5">F5</option>
+            <option value="F#5">F#5</option>
+            <option value="G5">G5</option>
+            <option value="G#5">G#5</option>
+            <option value="A5">A5</option>
+            <option value="A#5">A#5</option>
+            <option value="B5">B5</option>
+          </select>
+        </div>
+      </div>
+      
+      <button class="save-tuning" onclick="saveCustomTuning()">Salvar Afinação Personalizada</button>
+    </div>
+
+    <button id="permissionButton" class="permission-btn" onclick="requestMicrophonePermission()">
+      Ativar Microfone
+    </button>
+
+    <div class="main-content">
+      <div class="strings-container" id="stringsContainer">
+        </div>
+
+      <div class="tuner-display">
+        <div class="tuner-title">Afinador</div>
+        
+        <div class="needle-container">
+          <div class="needle-scale">
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark middle"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+          </div>
+          <div class="needle" id="needle"></div>
+        </div>
+
+        <div class="frequency-display">
+          <div class="current-freq" id="currentFreq">-- Hz</div>
+          <div class="target-freq" id="targetFreq">Alvo: -- Hz</div>
+          <div class="difference" id="difference">Diferença: -- Hz</div>
+          <div class="status" id="status">Toque uma corda</div>
+        </div>
+
+        <div class="note-indicator">
+          <span class="note-label">Nota:</span>
+          <span class="note-value" id="currentNote">--</span>
+          <span class="note-details" id="noteDetails"></span>
+        </div>
+
+        <div class="history-container">
+          <div class="history-graph" id="historyGraph"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>Como usar o afinador:</h3>
+      <p>1. Clique em "Ativar Microfone" para permitir o acesso ao microfone</p>
+      <p>2. Selecione uma afinação predefinida ou crie uma personalizada</p>
+      <p>3. Toque uma corda do seu violão - o afinador detectará automaticamente qual é</p>
+      <p>4. Ajuste a tarraxa até a agulha ficar centralizada e a mensagem ficar verde</p>
+      <p>5. A nota detectada será mostrada acima do gráfico de histórico</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>Afinador de Violão Online &copy; 2025 - Agamatsu ferrou com deepwoken!</p>
+  </footer>
+
+  <script>
+    let audioContext = null;
+    let analyser = null;
+    let dataArray = null;
+    let currentTuning = null;
+    let currentTuningName = null;
+    let currentTargetFreq = null;
+    let currentStringIndex = -1;
+    let manualSelection = false;
+    let historyData = [];
+    let microphone = null;
+    const MAX_HISTORY = 20;
+    const customTunings = {};
+
+    let lastValidFreq = null;
+    let lastValidNote = null;
+    let resetTimer = null;
+
+    // Frequências de referência (Lá4 = 440Hz)
+    const noteFrequencies = {
+      'C0': 16.35, 'C#0': 17.32, 'Db0': 17.32, 'D0': 18.35, 'D#0': 19.45, 'Eb0': 19.45, 'E0': 20.60, 'F0': 21.83, 'F#0': 23.12, 'Gb0': 23.12, 'G0': 24.50, 'G#0': 25.96, 'Ab0': 25.96, 'A0': 27.50, 'A#0': 29.14, 'Bb0': 29.14, 'B0': 30.87,
+      'C1': 32.70, 'C#1': 34.65, 'Db1': 34.65, 'D1': 36.71, 'D#1': 38.89, 'Eb1': 38.89, 'E1': 41.20, 'F1': 43.65, 'F#1': 46.25, 'Gb1': 46.25, 'G1': 49.00, 'G#1': 51.91, 'Ab1': 51.91, 'A1': 55.00, 'A#1': 58.27, 'Bb1': 58.27, 'B1': 61.74,
+      'C2': 65.41, 'C#2': 69.30, 'Db2': 69.30, 'D2': 73.42, 'D#2': 77.78, 'Eb2': 77.78, 'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'Gb2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'Ab2': 103.83, 'A2': 110.00, 'A#2': 116.54, 'Bb2': 116.54, 'B2': 123.47,
+      'C3': 130.81, 'C#3': 138.59, 'Db3': 138.59, 'D3': 146.83, 'D#3': 155.56, 'Eb3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'Gb3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'Ab3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'Bb3': 233.08, 'B3': 246.94,
+      'C4': 261.63, 'C#4': 277.18, 'Db4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'Eb4': 311.13, 'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'Gb4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'Ab4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'Bb4': 466.16, 'B4': 493.88,
+      'C5': 523.25, 'C#5': 554.37, 'Db5': 554.37, 'D5': 587.33, 'D#5': 622.25, 'Eb5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'Gb5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'Ab5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'Bb5': 932.33, 'B5': 987.77,
+      'C6': 1046.50, 'C#6': 1108.73, 'Db6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51, 'Eb6': 1244.51, 'E6': 1318.51, 'F6': 1396.91, 'F#6': 1479.98, 'Gb6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'Ab6': 1661.22, 'A6': 1760.00, 'A#6': 1864.66, 'Bb6': 1864.66, 'B6': 1975.53
+    };
+
+    const tunings = {
+      standard: [noteFrequencies['E2'], noteFrequencies['A2'], noteFrequencies['D3'], noteFrequencies['G3'], noteFrequencies['B3'], noteFrequencies['E4']],
+      dropd: [noteFrequencies['D2'], noteFrequencies['A2'], noteFrequencies['D3'], noteFrequencies['G3'], noteFrequencies['B3'], noteFrequencies['E4']],
+      eb: [noteFrequencies['Eb2'], noteFrequencies['Ab2'], noteFrequencies['Db3'], noteFrequencies['Gb3'], noteFrequencies['Bb3'], noteFrequencies['Eb4']],
+      dstd: [noteFrequencies['D2'], noteFrequencies['G2'], noteFrequencies['C3'], noteFrequencies['F3'], noteFrequencies['A3'], noteFrequencies['D4']],
+      openg: [noteFrequencies['D2'], noteFrequencies['G2'], noteFrequencies['D3'], noteFrequencies['G3'], noteFrequencies['B3'], noteFrequencies['D4']]
+    };
+
+    const stringNames = {
+      standard: ['E', 'A', 'D', 'G', 'B', 'E'],
+      dropd: ['D', 'A', 'D', 'G', 'B', 'E'],
+      eb: ['Eb', 'Ab', 'Db', 'Gb', 'Bb', 'Eb'],
+      dstd: ['D', 'G', 'C', 'F', 'A', 'D'],
+      openg: ['D', 'G', 'D', 'G', 'B', 'D']
+    };
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`.tab:nth-child(${tabName === 'preset' ? 1 : 2})`).classList.add('active');
+      
+      if (tabName === 'preset') {
+        document.getElementById('preset-tunings').style.display = 'grid';
+        document.getElementById('custom-tuning').style.display = 'none';
+      } else {
+        document.getElementById('preset-tunings').style.display = 'none';
+        document.getElementById('custom-tuning').style.display = 'block';
+      }
+    }
+
+    function selectTuning(card, tuning) {
+      if (!audioContext) {
+        alert("Por favor, ative o microfone primeiro!");
+        return;
+      }
+      
+      document.querySelectorAll('.tuning-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentTuning = tunings[tuning];
+      currentTuningName = tuning;
+      
+      // Exibe todas as frequências de referência
+      displayStrings(tuning);
+      
+      document.getElementById("currentFreq").innerText = "-- Hz";
+      document.getElementById("targetFreq").innerText = "Alvo: -- Hz";
+      document.getElementById("difference").innerText = "Diferença: -- Hz";
+      document.getElementById("status").innerText = "Toque uma corda";
+      document.getElementById("status").className = "status";
+      document.getElementById("currentNote").innerText = "--";
+      document.getElementById("noteDetails").innerText = "";
+      
+      // Limpa a corda ativa
+      currentTargetFreq = null;
+      currentStringIndex = -1;
+      manualSelection = false;
+      historyData = [];
+      updateHistoryGraph();
+      resetNeedle();
+      
+      document.querySelectorAll('.string').forEach(s => s.classList.remove('active'));
+    }
+
+    function saveCustomTuning() {
+      const name = document.getElementById('customTuningName').value.trim();
+      if (!name) {
+        alert('Por favor, dê um nome à sua afinação personalizada');
+        return;
+      }
+      
+      // Obtém as notas selecionadas
+      const notes = [
+        document.getElementById('string6').value,
+        document.getElementById('string5').value,
+        document.getElementById('string4').value,
+        document.getElementById('string3').value,
+        document.getElementById('string2').value,
+        document.getElementById('string1').value
+      ];
+      
+      // Calcula as frequências
+      const frequencies = notes.map(note => noteFrequencies[note]);
+      const noteNames = notes.map(note => note.replace(/\d/g, ''));
+      
+      // Salva a afinação personalizada
+      customTunings[name] = {
+        frequencies: frequencies,
+        noteNames: noteNames
+      };
+      
+      // Cria um card para a afinação personalizada
+      const customCard = document.createElement('div');
+      customCard.className = 'tuning-card';
+      customCard.innerHTML = `
+        ${name}
+        <span>Afinação personalizada</span>
+      `;
+      customCard.onclick = () => selectCustomTuning(customCard, name);
+      document.getElementById('preset-tunings').appendChild(customCard);
+      
+      alert(`Afinação "${name}" salva com sucesso!`);
+      showTab('preset');
+    }
+
+    function selectCustomTuning(card, name) {
+      if (!audioContext) {
+        alert("Por favor, ative o microfone primeiro!");
+        return;
+      }
+      
+      document.querySelectorAll('.tuning-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      
+      currentTuning = customTunings[name].frequencies;
+      currentTuningName = name;
+      
+      // Exibe todas as frequências de referência
+      displayCustomStrings(name);
+      
+      document.getElementById("currentFreq").innerText = "-- Hz";
+      document.getElementById("targetFreq").innerText = "Alvo: -- Hz";
+      document.getElementById("difference").innerText = "Diferença: -- Hz";
+      document.getElementById("status").innerText = "Toque uma corda";
+      document.getElementById("status").className = "status";
+      document.getElementById("currentNote").innerText = "--";
+      document.getElementById("noteDetails").innerText = "";
+      
+      // Limpa a corda ativa
+      currentTargetFreq = null;
+      currentStringIndex = -1;
+      manualSelection = false;
+      historyData = [];
+      updateHistoryGraph();
+      resetNeedle();
+      
+      document.querySelectorAll('.string').forEach(s => s.classList.remove('active'));
+    }
+
+    function displayCustomStrings(tuningName) {
+      const container = document.getElementById("stringsContainer");
+      container.innerHTML = '';
+      
+      const tuning = customTunings[tuningName];
+      
+      for (let i = 0; i < 6; i++) {
+        const stringDiv = document.createElement('div');
+        stringDiv.className = 'string';
+        stringDiv.innerHTML = `
+          <div class="string-name">${tuning.noteNames[i]}</div>
+          <div class="string-freq">${tuning.frequencies[i].toFixed(2)} Hz</div>
+        `;
+        stringDiv.onclick = () => selectStringManually(i);
+        container.appendChild(stringDiv);
+      }
+    }
+
+    function displayStrings(tuning) {
+      const container = document.getElementById("stringsContainer");
+      container.innerHTML = '';
+      
+      for (let i = 0; i < 6; i++) {
+        const stringDiv = document.createElement('div');
+        stringDiv.className = 'string';
+        stringDiv.innerHTML = `
+          <div class="string-name">${stringNames[tuning][i]}</div>
+          <div class="string-freq">${tunings[tuning][i].toFixed(2)} Hz</div>
+        `;
+        stringDiv.onclick = () => selectStringManually(i);
+        container.appendChild(stringDiv);
+      }
+    }
+
+    function selectStringManually(index) {
+      if (!currentTuning) return;
+      
+      manualSelection = true;
+      currentStringIndex = index;
+      currentTargetFreq = currentTuning[index];
+      
+      // Destaca a corda selecionada
+      document.querySelectorAll('.string').forEach((s, idx) => {
+        if (idx === index) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+      
+      document.getElementById("targetFreq").innerText = `Alvo: ${currentTargetFreq.toFixed(2)} Hz`;
+      document.getElementById("status").innerText = "Afinando corda selecionada";
+      document.getElementById("status").className = "status";
+    }
+
+    async function requestMicrophonePermission() {
+      try {
+        // Solicitar permissão para usar o microfone
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // Criar contexto de áudio
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Criar analisador
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048;
+        dataArray = new Float32Array(analyser.fftSize);
+        
+        // Conectar microfone ao analisador
+        microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        
+        // Iniciar detecção de pitch
+        detectPitch();
+        
+        // Esconder botão de permissão
+        document.getElementById("permissionButton").style.display = "none";
+        
+        // Selecionar afinação padrão
+        selectTuning(document.querySelector('.tuning-card'), 'standard');
+        
+      } catch (error) {
+        alert("Erro ao acessar o microfone: " + error.message);
+        console.error("Erro ao acessar microfone:", error);
+      }
+    }
+
+    function detectPitch() {
+      if (!analyser) return;
+      
+      requestAnimationFrame(detectPitch);
+      
+      analyser.getFloatTimeDomainData(dataArray);
+      
+      let rms = 0;
+      for (let i = 0; i < dataArray.length; i++) {
+          rms += dataArray[i] * dataArray[i];
+      }
+      rms = Math.sqrt(rms / dataArray.length);
+      
+      const rmsThreshold = 0.015;
+      
+      if (rms < rmsThreshold) {
+          // Volume muito baixo. Inicia o timer de reset se ainda não estiver ativo
+          if (lastValidFreq !== null && resetTimer === null) {
+              resetTimer = setTimeout(() => {
+                  lastValidFreq = null;
+                  lastValidNote = null;
+                  resetTimer = null;
+                  document.getElementById("currentFreq").innerText = "-- Hz";
+                  document.getElementById("targetFreq").innerText = "Alvo: -- Hz";
+                  document.getElementById("difference").innerText = "Diferença: -- Hz";
+                  document.getElementById("status").innerText = "Toque uma corda";
+                  document.getElementById("status").className = "status";
+                  document.getElementById("currentNote").innerText = "--";
+                  document.getElementById("noteDetails").innerText = "";
+                  resetNeedle();
+              }, 500); // Segura a leitura por 500ms
+          }
+          return;
+      } else {
+          // Volume está alto, limpa o timer de reset
+          if (resetTimer !== null) {
+              clearTimeout(resetTimer);
+              resetTimer = null;
+          }
+      }
+
+      let freq = autoCorrelate(dataArray, audioContext.sampleRate);
+
+      if (freq !== -1 && freq > 50 && freq < 500) {
+        let closestNote = null;
+        let closestDiff = Infinity;
+        
+        for (const [note, noteFreq] of Object.entries(noteFrequencies)) {
+          const diff = Math.abs(freq - noteFreq);
+          if (diff < closestDiff) {
+            closestDiff = diff;
+            closestNote = note;
+          }
+        }
+        
+        lastValidFreq = freq;
+        lastValidNote = closestNote;
+        
+        updateTunerDisplay(freq, closestNote);
+      } else {
+        // Se uma frequência não for detectada, mas houver uma última válida, mantém a exibição
+        if (lastValidFreq !== null) {
+          updateTunerDisplay(lastValidFreq, lastValidNote);
+        }
+      }
+    }
+
+    function updateTunerDisplay(freq, closestNote) {
+      // Atualiza o indicador de nota
+      const noteFreq = noteFrequencies[closestNote];
+      const cents = Math.round(1200 * Math.log2(freq / noteFreq));
+      
+      // Se não estamos em modo de seleção manual, detecta automaticamente
+      if (!manualSelection && currentTuning) {
+        let minDiff = Infinity;
+        let minIndex = -1;
+        
+        for (let i = 0; i < currentTuning.length; i++) {
+          const diff = Math.abs(currentTuning[i] - freq);
+          if (diff < minDiff) {
+            minDiff = diff;
+            minIndex = i;
+          }
+        }
+        
+        // Só define como alvo se estiver razoavelmente próxima
+        if (minDiff < 10) {
+          currentTargetFreq = currentTuning[minIndex];
+          currentStringIndex = minIndex;
+          
+          // Destaca a corda sendo afinada
+          document.querySelectorAll('.string').forEach((s, idx) => {
+            if (idx === minIndex) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+        }
+      }
+      
+      // Se temos um alvo definido, mostra a comparação
+      if (currentTargetFreq !== null) {
+        const diff = (freq - currentTargetFreq);
+        const diffAbs = Math.abs(diff);
+        const diffDisplay = diff.toFixed(2);
+        
+        // Atualiza a agulha
+        updateNeedle(diff);
+        
+        // Adiciona ao histórico
+        historyData.push(diff);
+        if (historyData.length > MAX_HISTORY) {
+          historyData.shift();
+        }
+        updateHistoryGraph();
+        
+        let status = "";
+        let statusClass = "";
+        if (diffAbs < 0.5) {
+          status = "✓ Perfeito!";
+          statusClass = "perfect";
+        } else if (diff < 0) {
+          status = "Muito baixa ↑";
+          statusClass = "too-low";
+        } else {
+          status = "Muito alta ↓";
+          statusClass = "too-high";
+        }
+        
+        document.getElementById("currentFreq").innerText = `${freq.toFixed(2)} Hz`;
+        document.getElementById("targetFreq").innerText = `Alvo: ${currentTargetFreq.toFixed(2)} Hz`;
+        document.getElementById("difference").innerText = `Diferença: ${diffDisplay} Hz`;
+        document.getElementById("status").innerText = status;
+        document.getElementById("status").className = `status ${statusClass}`;
+        
+        document.getElementById("currentNote").innerText = closestNote;
+        if (Math.abs(cents) < 5) {
+          document.getElementById("noteDetails").innerText = "✓ Afinado";
+          document.getElementById("noteDetails").style.color = "#4caf50";
+        } else if (cents < 0) {
+          document.getElementById("noteDetails").innerText = `${Math.abs(cents)} cents abaixo`;
+          document.getElementById("noteDetails").style.color = "#ff9800";
+        } else {
+          document.getElementById("noteDetails").innerText = `${cents} cents acima`;
+          document.getElementById("noteDetails").style.color = "#f44336";
+        }
+      }
+    }
+
+    function updateNeedle(diff) {
+      const needle = document.getElementById("needle");
+      // Limita a diferença para não girar demais a agulha
+      const limitedDiff = Math.max(-10, Math.min(10, diff));
+      // Calcula o ângulo de rotação (30 graus por unidade de diferença)
+      const angle = limitedDiff * 3;
+      needle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+    }
+
+    function resetNeedle() {
+      const needle = document.getElementById("needle");
+      needle.style.transform = `translateX(-50%) rotate(0deg)`;
+    }
+
+    function updateHistoryGraph() {
+      const historyGraph = document.getElementById("historyGraph");
+      historyGraph.innerHTML = '';
+      
+      for (let i = 0; i < historyData.length; i++) {
+        const diff = historyData[i];
+        // Normaliza a diferença para altura da barra (máximo de 10Hz = 100%)
+        const height = Math.min(100, Math.abs(diff) * 10);
+        const bar = document.createElement('div');
+        bar.className = 'history-bar';
+        bar.style.height = `${height}%`;
+        bar.style.opacity = 1 - (i / historyData.length) * 0.5;
+        historyGraph.appendChild(bar);
+      }
+    }
+
+    function autoCorrelate(buf, sampleRate) {
+      let SIZE = buf.length;
+      let rms = 0;
+      for (let i = 0; i < SIZE; i++) {
+        let val = buf[i];
+        rms += val * val;
+      }
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.01) return -1;
+
+      let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+      for (let i = 0; i < SIZE/2; i++) {
+        if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+      }
+      for (let i = 1; i < SIZE/2; i++) {
+        if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+      }
+
+      buf = buf.slice(r1, r2);
+      SIZE = buf.length;
+
+      let c = new Array(SIZE).fill(0);
+      for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE - i; j++)
+          c[i] = c[i] + buf[j] * buf[j+i];
+
+      let d = 0; while (c[d] > c[d+1]) d++;
+      let maxval = -1, maxpos = -1;
+      for (let i = d; i < SIZE; i++) {
+        if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+      }
+      let T0 = maxpos;
+
+      return sampleRate/T0;
+    }
+  </script>
+</body>
+</html>
