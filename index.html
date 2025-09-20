@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <link rel="icon" type="image/png" href="favicon.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Afinador Hartton</title>
@@ -17,6 +16,7 @@
     <div class="tabs">
       <div class="tab active" onclick="showTab('preset')">Afinações Predefinidas</div>
       <div class="tab" onclick="showTab('custom')">Afinações Personalizadas</div>
+      <div class="tab" onclick="showTab('settings')">Configurações</div>
     </div>
 
     <div id="preset-tunings" class="tuning-selector">
@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div id="custom-tuning" class="custom-tuning">
+    <div id="custom-tuning" class="custom-tuning" style="display: none;">
       <h3 id="customTuningTitle">Criar Afinação Personalizada</h3>
       <input type="text" class="custom-name" id="customTuningName" placeholder="Nome da afinação personalizada">
       <input type="text" class="custom-description" id="customTuningDescription" placeholder="Descrição da afinação (opcional)">
@@ -208,6 +208,26 @@
       <button class="save-tuning" onclick="saveCustomTuning()">Salvar Afinação Personalizada</button>
     </div>
 
+    <div id="settings" class="settings-page" style="display: none;">
+  <h3>Configurações</h3>
+  <div class="setting-item">
+    <label for="noiseGateSlider">Sensibilidade do Afinador</label>
+    <input type="range" id="noiseGateSlider" min="0.005" max="0.03" step="0.005" value="0.015">
+    <span id="noiseGateValue">0.015</span>
+  </div>
+  <p class="setting-help">Ajuste para ambientes mais barulhentos (valores maiores) ou mais silenciosos (valores menores).</p>
+
+  <div class="setting-item theme-setting">
+    <label for="themeSelector">Tema do Site</label>
+    <select id="themeSelector">
+      <option value="default">Padrão (Azul Escuro)</option>
+      <option value="neon-black">Neon Black</option>
+      <option value="light">Claro</option>
+      <option value="dark-purple">Escuro (Púrpura)</option>
+    </select>
+  </div>
+</div>
+
     <button id="permissionButton" class="permission-btn" onclick="toggleMicrophone()">
       Ativar Microfone
     </button>
@@ -269,8 +289,4 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
-
 </html>
-
-
-

@@ -14,6 +14,10 @@ let resetTimer = null;
 
 let historyChart = null;
 let editingTuningName = null;
+let settings = {
+    noiseGateThreshold: 0.015,
+    theme: 'default' // NOVO: Adiciona a configuração de tema
+};
 
 // Frequências de referência (Lá4 = 440Hz)
 const noteFrequencies = {
@@ -44,18 +48,16 @@ const stringNames = {
 
 const customTunings = {};
 
-// Função para salvar as afinações no localStorage
 function saveTuningsToLocalStorage() {
     localStorage.setItem('customTunings', JSON.stringify(customTunings));
 }
 
-// Função para carregar as afinações do localStorage
 function loadTuningsFromLocalStorage() {
     const savedTunings = localStorage.getItem('customTunings');
     if (savedTunings) {
         Object.assign(customTunings, JSON.parse(savedTunings));
         const presetContainer = document.getElementById('preset-tunings');
-        
+
         for (const name in customTunings) {
             const customCard = createCustomTuningCard(name, customTunings[name].description);
             presetContainer.appendChild(customCard);
@@ -63,7 +65,46 @@ function loadTuningsFromLocalStorage() {
     }
 }
 
-// Função para deletar uma afinação personalizada
+function saveSettingsToLocalStorage() {
+    localStorage.setItem('settings', JSON.stringify(settings));
+}
+
+function loadSettingsFromLocalStorage() {
+    const savedSettings = localStorage.getItem('settings');
+    if (savedSettings) {
+        Object.assign(settings, JSON.parse(savedSettings));
+    }
+}
+
+function initSettingsUI() {
+    const slider = document.getElementById('noiseGateSlider');
+    const valueSpan = document.getElementById('noiseGateValue');
+
+    slider.value = settings.noiseGateThreshold;
+    valueSpan.textContent = settings.noiseGateThreshold.toFixed(3);
+
+    slider.addEventListener('input', (event) => {
+        const newValue = parseFloat(event.target.value);
+        settings.noiseGateThreshold = newValue;
+        valueSpan.textContent = newValue.toFixed(3);
+        saveSettingsToLocalStorage();
+    });
+
+    // NOVO: Inicializa e escuta o seletor de temas
+    const themeSelector = document.getElementById('themeSelector');
+    themeSelector.value = settings.theme;
+    themeSelector.addEventListener('change', (event) => {
+        settings.theme = event.target.value;
+        applyTheme(settings.theme);
+        saveSettingsToLocalStorage();
+    });
+}
+
+// NOVO: Função para aplicar o tema selecionado
+function applyTheme(themeName) {
+    document.body.className = `${themeName}-theme`;
+}
+
 function deleteCustomTuning(name) {
     if (confirm(`Tem certeza que deseja deletar a afinação "${name}"?`)) {
         delete customTunings[name];
@@ -85,7 +126,6 @@ function deleteCustomTuning(name) {
     }
 }
 
-// NOVO: Função para criar o cartão de afinação personalizada com todos os botões
 function createCustomTuningCard(name, description) {
     const customCard = document.createElement('div');
     customCard.className = 'tuning-card custom';
@@ -100,38 +140,31 @@ function createCustomTuningCard(name, description) {
     return customCard;
 }
 
-// NOVO: Função para carregar os dados de uma afinação para edição
 function editCustomTuning(name) {
     const tuningData = customTunings[name];
     if (!tuningData) return;
 
-    // Seta o nome da afinação que está sendo editada
     editingTuningName = name;
-
-    // Muda o título do formulário
     document.getElementById('customTuningTitle').innerText = 'Editar Afinação';
-
-    // Preenche os campos de nome e descrição
     document.getElementById('customTuningName').value = name;
     document.getElementById('customTuningDescription').value = tuningData.description;
 
-    // Preenche os campos das cordas
     const stringSelects = ['string6', 'string5', 'string4', 'string3', 'string2', 'string1'];
     tuningData.noteNames.forEach((note, index) => {
         const select = document.getElementById(stringSelects[index]);
         select.value = note;
     });
 
-    // Muda o texto do botão para "Salvar Edição"
     const saveButton = document.querySelector('.save-tuning');
     saveButton.innerText = 'Salvar Edição';
-
-    // Muda para a aba de afinação personalizada
     showTab('custom');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadTuningsFromLocalStorage();
+    loadSettingsFromLocalStorage();
+    initSettingsUI();
+    applyTheme(settings.theme); // Aplica o tema salvo ao carregar
     initChart();
 });
 
@@ -191,28 +224,29 @@ function initChart() {
 
 function showTab(tabName) {
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelector(`.tab:nth-child(${tabName === 'preset' ? 1 : 2})`).classList.add('active');
-    
-    // Reseta o estado do formulário de afinação personalizada ao mudar de aba
+    document.getElementById('preset-tunings').style.display = 'none';
+    document.getElementById('custom-tuning').style.display = 'none';
+    document.getElementById('settings').style.display = 'none';
+
     if (tabName === 'preset') {
+        document.querySelector(`.tab:nth-child(1)`).classList.add('active');
         document.getElementById('preset-tunings').style.display = 'grid';
-        document.getElementById('custom-tuning').style.display = 'none';
         resetCustomTuningForm();
-    } else {
-        document.getElementById('preset-tunings').style.display = 'none';
+    } else if (tabName === 'custom') {
+        document.querySelector(`.tab:nth-child(2)`).classList.add('active');
         document.getElementById('custom-tuning').style.display = 'block';
+    } else if (tabName === 'settings') {
+        document.querySelector(`.tab:nth-child(3)`).classList.add('active');
+        document.getElementById('settings').style.display = 'block';
     }
 }
 
-// NOVO: Função para resetar o formulário de afinação personalizada
 function resetCustomTuningForm() {
     editingTuningName = null;
     document.getElementById('customTuningTitle').innerText = 'Criar Afinação Personalizada';
     document.getElementById('customTuningName').value = '';
     document.getElementById('customTuningDescription').value = '';
     document.querySelector('.save-tuning').innerText = 'Salvar Afinação Personalizada';
-
-    // Reseta as cordas para a afinação padrão (Standard)
     const standardNotes = ['E2', 'A3', 'D4', 'G4', 'B4', 'E5'];
     const stringSelects = ['string6', 'string5', 'string4', 'string3', 'string2', 'string1'];
     stringSelects.forEach((id, index) => {
@@ -226,14 +260,14 @@ function selectTuning(card, tuning) {
         alert("Por favor, ative o microfone primeiro!");
         return;
     }
-    
+
     document.querySelectorAll('.tuning-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     currentTuning = tunings[tuning];
     currentTuningName = tuning;
-    
+
     displayStrings(tuning);
-    
+
     document.getElementById("currentFreq").innerText = "-- Hz";
     document.getElementById("targetFreq").innerText = "Alvo: -- Hz";
     document.getElementById("difference").innerText = "Diferença: -- Hz";
@@ -241,7 +275,7 @@ function selectTuning(card, tuning) {
     document.getElementById("status").className = "status";
     document.getElementById("currentNote").innerText = "--";
     document.getElementById("noteDetails").innerText = "";
-    
+
     currentTargetFreq = null;
     currentStringIndex = -1;
     manualSelection = false;
@@ -249,19 +283,19 @@ function selectTuning(card, tuning) {
     historyChart.data.datasets[0].data = [];
     historyChart.update();
     resetNeedle();
-    
+
     document.querySelectorAll('.string').forEach(s => s.classList.remove('active'));
 }
 
 function saveCustomTuning() {
     const name = document.getElementById('customTuningName').value.trim();
     const description = document.getElementById('customTuningDescription').value.trim();
-    
+
     if (!name) {
         alert('Por favor, dê um nome à sua afinação personalizada');
         return;
     }
-    
+
     const notes = [
         document.getElementById('string6').value,
         document.getElementById('string5').value,
@@ -270,12 +304,11 @@ function saveCustomTuning() {
         document.getElementById('string2').value,
         document.getElementById('string1').value
     ];
-    
+
     const frequencies = notes.map(note => noteFrequencies[note]);
     const noteNames = notes.map(note => note.replace(/\d/g, ''));
-    
+
     if (editingTuningName && editingTuningName !== name) {
-        // Se o nome foi alterado durante a edição, remove a afinação antiga
         delete customTunings[editingTuningName];
         const oldCard = document.querySelector(`.tuning-card[data-tuning-name="${editingTuningName}"]`);
         if (oldCard) oldCard.remove();
@@ -286,18 +319,16 @@ function saveCustomTuning() {
         noteNames: noteNames,
         description: description
     };
-    
-    saveTuningsToLocalStorage();
 
-    // Remove o card antigo se estiver em modo de edição
+    saveTuningsToLocalStorage();
     const existingCard = document.querySelector(`.tuning-card[data-tuning-name="${name}"]`);
     if (existingCard) {
         existingCard.remove();
     }
-    
+
     const customCard = createCustomTuningCard(name, description);
     document.getElementById('preset-tunings').appendChild(customCard);
-    
+
     alert(`Afinação "${name}" salva com sucesso!`);
     resetCustomTuningForm();
     showTab('preset');
@@ -308,15 +339,15 @@ function selectCustomTuning(card, name) {
         alert("Por favor, ative o microfone primeiro!");
         return;
     }
-    
+
     document.querySelectorAll('.tuning-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
-    
+
     currentTuning = customTunings[name].frequencies;
     currentTuningName = name;
-    
+
     displayCustomStrings(name);
-    
+
     document.getElementById("currentFreq").innerText = "-- Hz";
     document.getElementById("targetFreq").innerText = "Alvo: -- Hz";
     document.getElementById("difference").innerText = "Diferença: -- Hz";
@@ -324,7 +355,7 @@ function selectCustomTuning(card, name) {
     document.getElementById("status").className = "status";
     document.getElementById("currentNote").innerText = "--";
     document.getElementById("noteDetails").innerText = "";
-    
+
     currentTargetFreq = null;
     currentStringIndex = -1;
     manualSelection = false;
@@ -332,16 +363,16 @@ function selectCustomTuning(card, name) {
     historyChart.data.datasets[0].data = [];
     historyChart.update();
     resetNeedle();
-    
+
     document.querySelectorAll('.string').forEach(s => s.classList.remove('active'));
 }
 
 function displayCustomStrings(tuningName) {
     const container = document.getElementById("stringsContainer");
     container.innerHTML = '';
-    
+
     const tuning = customTunings[tuningName];
-    
+
     for (let i = 0; i < 6; i++) {
         const stringDiv = document.createElement('div');
         stringDiv.className = 'string';
@@ -357,7 +388,7 @@ function displayCustomStrings(tuningName) {
 function displayStrings(tuning) {
     const container = document.getElementById("stringsContainer");
     container.innerHTML = '';
-    
+
     for (let i = 0; i < 6; i++) {
         const stringDiv = document.createElement('div');
         stringDiv.className = 'string';
@@ -372,11 +403,11 @@ function displayStrings(tuning) {
 
 function selectStringManually(index) {
     if (!currentTuning) return;
-    
+
     manualSelection = true;
     currentStringIndex = index;
     currentTargetFreq = currentTuning[index];
-    
+
     document.querySelectorAll('.string').forEach((s, idx) => {
         if (idx === index) {
             s.classList.add('active');
@@ -384,7 +415,7 @@ function selectStringManually(index) {
             s.classList.remove('active');
         }
     });
-    
+
     document.getElementById("targetFreq").innerText = `Alvo: ${currentTargetFreq.toFixed(2)} Hz`;
     document.getElementById("status").innerText = "Afinando corda selecionada";
     document.getElementById("status").className = "status";
@@ -403,13 +434,13 @@ async function toggleMicrophone() {
             await audioContext.close();
             audioContext = null;
         }
-        
+
         permissionButton.innerText = "Ativar Microfone";
         permissionButton.classList.remove('active');
         statusMessage.innerText = "Microfone desativado.";
-        
+
         selectTuning(document.querySelector('.tuning-card'), 'standard');
-        
+
     } else {
         permissionButton.innerText = "Ativando...";
         permissionButton.classList.add('loading');
@@ -430,9 +461,9 @@ async function toggleMicrophone() {
             permissionButton.classList.remove('loading');
             permissionButton.classList.add('active');
             statusMessage.innerText = "Microfone ativado. Toque uma corda para começar.";
-            
+
             selectTuning(document.querySelector('.tuning-card'), 'standard');
-            
+
         } catch (error) {
             alert("Erro ao acessar o microfone: " + error.message);
             console.error("Erro ao acessar microfone:", error);
@@ -447,20 +478,18 @@ async function toggleMicrophone() {
 
 function detectPitch() {
     if (!analyser || audioContext.state === 'closed') return;
-    
+
     requestAnimationFrame(detectPitch);
-    
+
     analyser.getFloatTimeDomainData(dataArray);
-    
+
     let rms = 0;
     for (let i = 0; i < dataArray.length; i++) {
         rms += dataArray[i] * dataArray[i];
     }
     rms = Math.sqrt(rms / dataArray.length);
-    
-    const rmsThreshold = 0.015;
-    
-    if (rms < rmsThreshold) {
+
+    if (rms < settings.noiseGateThreshold) {
         if (lastValidFreq !== null && resetTimer === null) {
             resetTimer = setTimeout(() => {
                 lastValidFreq = null;
@@ -474,7 +503,7 @@ function detectPitch() {
                 document.getElementById("currentNote").innerText = "--";
                 document.getElementById("noteDetails").innerText = "";
                 resetNeedle();
-            }, 600); 
+            }, 500);
         }
         return;
     } else {
@@ -489,7 +518,7 @@ function detectPitch() {
     if (freq !== -1 && freq > 50 && freq < 500) {
         let closestNote = null;
         let closestDiff = Infinity;
-        
+
         for (const [note, noteFreq] of Object.entries(noteFrequencies)) {
           const diff = Math.abs(freq - noteFreq);
           if (diff < closestDiff) {
@@ -497,10 +526,10 @@ function detectPitch() {
             closestNote = note;
           }
         }
-        
+
         lastValidFreq = freq;
         lastValidNote = closestNote;
-        
+
         updateTunerDisplay(freq, closestNote);
     } else {
         if (lastValidFreq !== null) {
@@ -512,11 +541,11 @@ function detectPitch() {
 function updateTunerDisplay(freq, closestNote) {
     const noteFreq = noteFrequencies[closestNote];
     const cents = Math.round(1200 * Math.log2(freq / noteFreq));
-    
+
     if (!manualSelection && currentTuning) {
         let minDiff = Infinity;
         let minIndex = -1;
-        
+
         for (let i = 0; i < currentTuning.length; i++) {
             const diff = Math.abs(currentTuning[i] - freq);
             if (diff < minDiff) {
@@ -524,11 +553,11 @@ function updateTunerDisplay(freq, closestNote) {
                 minIndex = i;
             }
         }
-        
+
         if (minDiff < 10) {
             currentTargetFreq = currentTuning[minIndex];
             currentStringIndex = minIndex;
-            
+
             document.querySelectorAll('.string').forEach((s, idx) => {
                 if (idx === minIndex) {
                     s.classList.add('active');
@@ -538,17 +567,17 @@ function updateTunerDisplay(freq, closestNote) {
             });
         }
     }
-    
+
     if (currentTargetFreq !== null) {
         const diff = (freq - currentTargetFreq);
         const diffAbs = Math.abs(diff);
         const diffDisplay = diff.toFixed(2);
-        
+
         updateNeedle(diff);
-        
+
         const historyData = historyChart.data.datasets[0].data;
         const labels = historyChart.data.labels;
-        
+
         if (historyData.length >= 20) {
             historyData.shift();
             labels.shift();
@@ -556,7 +585,7 @@ function updateTunerDisplay(freq, closestNote) {
         historyData.push(diff);
         labels.push('');
         historyChart.update();
-        
+
         let status = "";
         let statusClass = "";
         if (diffAbs < 0.5) {
@@ -569,23 +598,23 @@ function updateTunerDisplay(freq, closestNote) {
             status = "Muito alta ↓";
             statusClass = "too-high";
         }
-        
+
         document.getElementById("currentFreq").innerText = `${freq.toFixed(2)} Hz`;
         document.getElementById("targetFreq").innerText = `Alvo: ${currentTargetFreq.toFixed(2)} Hz`;
         document.getElementById("difference").innerText = `Diferença: ${diffDisplay} Hz`;
         document.getElementById("status").innerText = status;
         document.getElementById("status").className = `status ${statusClass}`;
-        
+
         document.getElementById("currentNote").innerText = closestNote;
         if (Math.abs(cents) < 5) {
             document.getElementById("noteDetails").innerText = "✓ Afinado";
-            document.getElementById("noteDetails").style.color = "#4caf50";
+            document.getElementById("noteDetails").style.color = "var(--success-color)";
         } else if (cents < 0) {
             document.getElementById("noteDetails").innerText = `${Math.abs(cents)} cents abaixo`;
-            document.getElementById("noteDetails").style.color = "#ff9800";
+            document.getElementById("noteDetails").style.color = "var(--warning-color)";
         } else {
             document.getElementById("noteDetails").innerText = `${cents} cents acima`;
-            document.getElementById("noteDetails").style.color = "#f44336";
+            document.getElementById("noteDetails").style.color = "var(--danger-color)";
         }
     }
 }
@@ -610,7 +639,7 @@ function autoCorrelate(buf, sampleRate) {
         rms += val * val;
     }
     rms = Math.sqrt(rms / SIZE);
-    if (rms < 0.01) return -1;
+    if (rms < 0.005) return -1;
 
     let r1 = 0, r2 = SIZE - 1, thres = 0.2;
     for (let i = 0; i < SIZE/2; i++) {
@@ -637,6 +666,5 @@ function autoCorrelate(buf, sampleRate) {
 
     return sampleRate/T0;
 }
-
 
 function updateHistoryGraph() {}
