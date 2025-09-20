@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easy Tuna</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Afinador mt bom Easy Tuna </h1>
+    <p class="subtitle">Só fiz isso porque não tenho dinheiro para comprar um afinador, é tenso...</p>
+  </header>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('preset')">Afinações Predefinidas</div>
+      <div class="tab" onclick="showTab('custom')">Afinações Personalizadas</div>
+    </div>
+
+    <div id="preset-tunings" class="tuning-selector">
+      <div class="tuning-card" onclick="selectTuning(this, 'standard')">
+        Standard (EADGBE)
+        <span>Afinação padrão</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'dropd')">
+        Drop D (DADGBE)
+        <span>Para músicas mais pesadas</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'eb')">
+        Eb Standard (EbAbDbGbBbEb)
+        <span>Meio tom abaixo</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'dstd')">
+        D Standard (DGCFAD)
+        <span>Um tom abaixo</span>
+      </div>
+      <div class="tuning-card" onclick="selectTuning(this, 'openg')">
+        Open G (DGDGBD)
+        <span>Para blues e slide guitar</span>
+      </div>
+    </div>
+
+    <div id="custom-tuning" class="custom-tuning">
+      <h3>Criar Afinação Personalizada</h3>
+      <input type="text" class="custom-name" id="customTuningName" placeholder="Nome da afinação personalizada">
+      
+      <div class="string-selector">
+        <div class="string-config">
+          <span class="string-label">6ª</span>
+          <select id="string6">
+            <option value="E2">E2</option>
+            <option value="F2">F2</option>
+            <option value="F#2">F#2</option>
+            <option value="G2">G2</option>
+            <option value="G#2">G#2</option>
+            <option value="A2">A2</option>
+            <option value="A#2">A#2</option>
+            <option value="B2">B2</option>
+            <option value="C3">C3</option>
+            <option value="C#3">C#3</option>
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">5ª</span>
+          <select id="string5">
+            <option value="A2">A2</option>
+            <option value="A#2">A#2</option>
+            <option value="B2">B2</option>
+            <option value="C3">C3</option>
+            <option value="C#3">C#3</option>
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3" selected>A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">4ª</span>
+          <select id="string4">
+            <option value="D3">D3</option>
+            <option value="D#3">D#3</option>
+            <option value="E3">E3</option>
+            <option value="F3">F3</option>
+            <option value="F#3">F#3</option>
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4" selected>D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">3ª</span>
+          <select id="string3">
+            <option value="G3">G3</option>
+            <option value="G#3">G#3</option>
+            <option value="A3">A3</option>
+            <option value="A#3">A#3</option>
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4" selected>G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4">B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">2ª</span>
+          <select id="string2">
+            <option value="B3">B3</option>
+            <option value="C4">C4</option>
+            <option value="C#4">C#4</option>
+            <option value="D4">D4</option>
+            <option value="D#4">D#4</option>
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4" selected>B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+            <option value="D#5">D#5</option>
+            <option value="E5">E5</option>
+            <option value="F5">F5</option>
+            <option value="F#5">F#5</option>
+          </select>
+        </div>
+        
+        <div class="string-config">
+          <span class="string-label">1ª</span>
+          <select id="string1">
+            <option value="E4">E4</option>
+            <option value="F4">F4</option>
+            <option value="F#4">F#4</option>
+            <option value="G4">G4</option>
+            <option value="G#4">G#4</option>
+            <option value="A4">A4</option>
+            <option value="A#4">A#4</option>
+            <option value="B4">B4</option>
+            <option value="C5">C5</option>
+            <option value="C#5">C#5</option>
+            <option value="D5">D5</option>
+            <option value="D#5">D#5</option>
+            <option value="E5" selected>E5</option>
+            <option value="F5">F5</option>
+            <option value="F#5">F#5</option>
+            <option value="G5">G5</option>
+            <option value="G#5">G#5</option>
+            <option value="A5">A5</option>
+            <option value="A#5">A#5</option>
+            <option value="B5">B5</option>
+          </select>
+        </div>
+      </div>
+      
+      <button class="save-tuning" onclick="saveCustomTuning()">Salvar Afinação Personalizada</button>
+    </div>
+
+    <button id="permissionButton" class="permission-btn" onclick="toggleMicrophone()">
+      Ativar Microfone
+    </button>
+    <div id="statusMessage" class="status-message"></div>
+
+    <div class="main-content">
+      <div class="strings-container" id="stringsContainer">
+        </div>
+
+      <div class="tuner-display">
+        <div class="tuner-title">Afinador</div>
+        
+        <div class="needle-container">
+          <div class="needle-scale">
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark middle"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+            <div class="scale-mark"></div>
+          </div>
+          <div class="needle" id="needle"></div>
+        </div>
+
+        <div class="frequency-display">
+          <div class="current-freq" id="currentFreq">-- Hz</div>
+          <div class="target-freq" id="targetFreq">Alvo: -- Hz</div>
+          <div class="difference" id="difference">Diferença: -- Hz</div>
+          <div class="status" id="status">Toque uma corda</div>
+        </div>
+
+        <div class="note-indicator">
+          <span class="note-label">Nota:</span>
+          <span class="note-value" id="currentNote">--</span>
+          <span class="note-details" id="noteDetails"></span>
+        </div>
+
+        <div class="history-container">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>Como usar o afinador:</h3>
+      <p>1. Clique em "Ativar Microfone" para permitir o acesso ao microfone</p>
+      <p>2. Selecione uma afinação predefinida ou crie uma personalizada</p>
+      <p>3. Toque uma corda do seu violão - o afinador detectará automaticamente qual é</p>
+      <p>4. Ajuste a tarraxa até a agulha ficar centralizada e a mensagem ficar verde</p>
+      <p>5. A nota detectada será mostrada acima do gráfico de histórico</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>Afinador de Violão Online &copy; 2023 - Funciona melhor em ambientes silenciosos</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
