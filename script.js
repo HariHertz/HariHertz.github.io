@@ -13,6 +13,7 @@ let lastValidNote = null;
 let resetTimer = null;
 
 let historyChart = null;
+let editingTuningName = null;
 
 // Frequências de referência (Lá4 = 440Hz)
 const noteFrequencies = {
@@ -43,7 +44,94 @@ const stringNames = {
 
 const customTunings = {};
 
+// Função para salvar as afinações no localStorage
+function saveTuningsToLocalStorage() {
+    localStorage.setItem('customTunings', JSON.stringify(customTunings));
+}
+
+// Função para carregar as afinações do localStorage
+function loadTuningsFromLocalStorage() {
+    const savedTunings = localStorage.getItem('customTunings');
+    if (savedTunings) {
+        Object.assign(customTunings, JSON.parse(savedTunings));
+        const presetContainer = document.getElementById('preset-tunings');
+        
+        for (const name in customTunings) {
+            const customCard = createCustomTuningCard(name, customTunings[name].description);
+            presetContainer.appendChild(customCard);
+        }
+    }
+}
+
+// Função para deletar uma afinação personalizada
+function deleteCustomTuning(name) {
+    if (confirm(`Tem certeza que deseja deletar a afinação "${name}"?`)) {
+        delete customTunings[name];
+        saveTuningsToLocalStorage();
+        const cardToRemove = document.querySelector(`.tuning-card[data-tuning-name="${name}"]`);
+        if (cardToRemove) {
+            cardToRemove.remove();
+        }
+
+        if (currentTuningName === name) {
+            currentTuning = null;
+            currentTuningName = null;
+            document.getElementById("status").innerText = "Afinação removida. Selecione outra.";
+            document.getElementById("status").className = "status";
+            document.getElementById("currentNote").innerText = "--";
+            document.getElementById("noteDetails").innerText = "";
+            resetNeedle();
+        }
+    }
+}
+
+// NOVO: Função para criar o cartão de afinação personalizada com todos os botões
+function createCustomTuningCard(name, description) {
+    const customCard = document.createElement('div');
+    customCard.className = 'tuning-card custom';
+    customCard.setAttribute('data-tuning-name', name);
+    customCard.innerHTML = `
+        <div class="card-name">${name}</div>
+        <button class="delete-btn" onclick="event.stopPropagation(); deleteCustomTuning('${name}')">🗑️</button>
+        <button class="edit-btn" onclick="event.stopPropagation(); editCustomTuning('${name}')">✏️</button>
+        <span class="card-description">${description || 'Afinação personalizada'}</span>
+    `;
+    customCard.onclick = () => selectCustomTuning(customCard, name);
+    return customCard;
+}
+
+// NOVO: Função para carregar os dados de uma afinação para edição
+function editCustomTuning(name) {
+    const tuningData = customTunings[name];
+    if (!tuningData) return;
+
+    // Seta o nome da afinação que está sendo editada
+    editingTuningName = name;
+
+    // Muda o título do formulário
+    document.getElementById('customTuningTitle').innerText = 'Editar Afinação';
+
+    // Preenche os campos de nome e descrição
+    document.getElementById('customTuningName').value = name;
+    document.getElementById('customTuningDescription').value = tuningData.description;
+
+    // Preenche os campos das cordas
+    const stringSelects = ['string6', 'string5', 'string4', 'string3', 'string2', 'string1'];
+    tuningData.noteNames.forEach((note, index) => {
+        const select = document.getElementById(stringSelects[index]);
+        select.value = note;
+    });
+
+    // Muda o texto do botão para "Salvar Edição"
+    const saveButton = document.querySelector('.save-tuning');
+    saveButton.innerText = 'Salvar Edição';
+
+    // Muda para a aba de afinação personalizada
+    showTab('custom');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    loadTuningsFromLocalStorage();
     initChart();
 });
 
@@ -105,14 +193,33 @@ function showTab(tabName) {
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.querySelector(`.tab:nth-child(${tabName === 'preset' ? 1 : 2})`).classList.add('active');
     
+    // Reseta o estado do formulário de afinação personalizada ao mudar de aba
     if (tabName === 'preset') {
         document.getElementById('preset-tunings').style.display = 'grid';
         document.getElementById('custom-tuning').style.display = 'none';
+        resetCustomTuningForm();
     } else {
         document.getElementById('preset-tunings').style.display = 'none';
         document.getElementById('custom-tuning').style.display = 'block';
     }
 }
+
+// NOVO: Função para resetar o formulário de afinação personalizada
+function resetCustomTuningForm() {
+    editingTuningName = null;
+    document.getElementById('customTuningTitle').innerText = 'Criar Afinação Personalizada';
+    document.getElementById('customTuningName').value = '';
+    document.getElementById('customTuningDescription').value = '';
+    document.querySelector('.save-tuning').innerText = 'Salvar Afinação Personalizada';
+
+    // Reseta as cordas para a afinação padrão (Standard)
+    const standardNotes = ['E2', 'A3', 'D4', 'G4', 'B4', 'E5'];
+    const stringSelects = ['string6', 'string5', 'string4', 'string3', 'string2', 'string1'];
+    stringSelects.forEach((id, index) => {
+        document.getElementById(id).value = standardNotes[index];
+    });
+}
+
 
 function selectTuning(card, tuning) {
     if (!audioContext) {
@@ -125,7 +232,6 @@ function selectTuning(card, tuning) {
     currentTuning = tunings[tuning];
     currentTuningName = tuning;
     
-    // Exibe todas as frequências de referência
     displayStrings(tuning);
     
     document.getElementById("currentFreq").innerText = "-- Hz";
@@ -136,7 +242,6 @@ function selectTuning(card, tuning) {
     document.getElementById("currentNote").innerText = "--";
     document.getElementById("noteDetails").innerText = "";
     
-    // Limpa a corda ativa
     currentTargetFreq = null;
     currentStringIndex = -1;
     manualSelection = false;
@@ -150,6 +255,8 @@ function selectTuning(card, tuning) {
 
 function saveCustomTuning() {
     const name = document.getElementById('customTuningName').value.trim();
+    const description = document.getElementById('customTuningDescription').value.trim();
+    
     if (!name) {
         alert('Por favor, dê um nome à sua afinação personalizada');
         return;
@@ -167,18 +274,32 @@ function saveCustomTuning() {
     const frequencies = notes.map(note => noteFrequencies[note]);
     const noteNames = notes.map(note => note.replace(/\d/g, ''));
     
+    if (editingTuningName && editingTuningName !== name) {
+        // Se o nome foi alterado durante a edição, remove a afinação antiga
+        delete customTunings[editingTuningName];
+        const oldCard = document.querySelector(`.tuning-card[data-tuning-name="${editingTuningName}"]`);
+        if (oldCard) oldCard.remove();
+    }
+
     customTunings[name] = {
         frequencies: frequencies,
-        noteNames: noteNames
+        noteNames: noteNames,
+        description: description
     };
     
-    const customCard = document.createElement('div');
-    customCard.className = 'tuning-card';
-    customCard.innerHTML = `${name}<span>Afinação personalizada</span>`;
-    customCard.onclick = () => selectCustomTuning(customCard, name);
+    saveTuningsToLocalStorage();
+
+    // Remove o card antigo se estiver em modo de edição
+    const existingCard = document.querySelector(`.tuning-card[data-tuning-name="${name}"]`);
+    if (existingCard) {
+        existingCard.remove();
+    }
+    
+    const customCard = createCustomTuningCard(name, description);
     document.getElementById('preset-tunings').appendChild(customCard);
     
     alert(`Afinação "${name}" salva com sucesso!`);
+    resetCustomTuningForm();
     showTab('preset');
 }
 
@@ -274,7 +395,6 @@ async function toggleMicrophone() {
     const statusMessage = document.getElementById("statusMessage");
 
     if (audioContext && audioContext.state === 'running') {
-        // Stop the microphone
         if (microphone) {
             microphone.disconnect();
             microphone = null;
@@ -288,11 +408,9 @@ async function toggleMicrophone() {
         permissionButton.classList.remove('active');
         statusMessage.innerText = "Microfone desativado.";
         
-        // Reset the UI
         selectTuning(document.querySelector('.tuning-card'), 'standard');
         
     } else {
-        // Start the microphone
         permissionButton.innerText = "Ativando...";
         permissionButton.classList.add('loading');
         statusMessage.innerText = "Aguardando permissão do navegador...";
@@ -313,7 +431,6 @@ async function toggleMicrophone() {
             permissionButton.classList.add('active');
             statusMessage.innerText = "Microfone ativado. Toque uma corda para começar.";
             
-            // Auto-select standard tuning
             selectTuning(document.querySelector('.tuning-card'), 'standard');
             
         } catch (error) {
@@ -521,7 +638,4 @@ function autoCorrelate(buf, sampleRate) {
     return sampleRate/T0;
 }
 
-function updateHistoryGraph() {
-    // This function is no longer needed as Chart.js handles the updates directly.
-    // It's kept here as a placeholder in case you decide to add other logic.
-}
+function updateHistoryGraph() {}

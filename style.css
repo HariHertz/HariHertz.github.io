@@ -448,3 +448,88 @@ footer {
   font-style: italic;
   font-size: 0.9rem;
 }
+
+/* Estilo para o botão de deletar */
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    color: #fff;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+}
+
+.tuning-card.custom {
+    position: relative;
+    padding-top: 30px;
+}
+
+/* Estilo para o campo de descrição */
+.custom-description {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Estilo para os botões de ação nos cartões */
+.delete-btn,
+.edit-btn {
+    position: absolute;
+    top: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    color: #fff;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.delete-btn:hover,
+.edit-btn:hover {
+    opacity: 1;
+}
+
+.delete-btn {
+    right: 5px;
+}
+
+.edit-btn {
+    right: 35px;
+}
+
+/* Garante espaço para os botões nos cartões */
+.tuning-card.custom {
+    position: relative;
+    padding-top: 30px;
+}
+
+/* Estilo para o nome e descrição nos cartões personalizados */
+.tuning-card .card-name {
+    font-weight: bold;
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px rgba(76, 175, 239, 0.5);
+}
+
+.tuning-card .card-description {
+    display: block;
+    font-size: 0.9em;
+    color: #aaa;
+    margin-top: 5px;
+}
