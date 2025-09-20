@@ -474,7 +474,7 @@ function detectPitch() {
                 document.getElementById("currentNote").innerText = "--";
                 document.getElementById("noteDetails").innerText = "";
                 resetNeedle();
-            }, 500); 
+            }, 600); 
         }
         return;
     } else {
@@ -637,5 +637,6 @@ function autoCorrelate(buf, sampleRate) {
 
     return sampleRate/T0;
 }
+
 
 function updateHistoryGraph() {}
